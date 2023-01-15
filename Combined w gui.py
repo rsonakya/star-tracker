@@ -1,10 +1,14 @@
+#Rohan Sonakya Last edit: 1/14/2022
+
+#Import libraries
 from tkinter import *
 from tkinter.ttk import Combobox
+import moving_functions as mf
 
-
+#Hard values from gearing and stepper motor
 STEP_PER_DEGREE = (512*225)/360
 
-
+#GUI
 class MyWindow:
   def __init__(self, win):
     self.lbl=Label(window, text="Pitch", fg='red', font=("Helvetica", 16))
@@ -37,113 +41,48 @@ class MyWindow:
     self.txtfld3=Entry(window, text="Degrees?", bd=8)
     self.txtfld3.place(x=155, y=150)
 
+  #Backend
   def add(self):
+        #Pull values
         pitch_direction = self.cb2.get()
         yaw_direction = self.cb.get()
         pitch_degrees = self.txtfld2.get()
         yaw_degrees = self.txtfld1.get()
-        self.txtfld3.insert(END, str(str(pitch_direction) +str(pitch_degrees + str(yaw_direction) )+ str(yaw_degrees)))
-        pitch_degree_to_step = float(pitch_degrees) * STEP_PER_DEGREE
-        if pitch_direction == "Up":
-          GPIO.setmode(GPIO.BOARD)
-          control_pins = [7,11,13,15]
-          for pin in control_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, 0) 
-          halfstep_seq = [
-          [1,0,0,0],
-          [1,1,0,0],
-          [0,1,0,0],
-          [0,1,1,0],
-          [0,0,1,0],
-          [0,0,1,1],
-          [0,0,0,1],
-          [1,0,0,1]
-          ]
-          for i in range(int(pitch_degree_to_step)):
-            for halfstep in range(8):
-              for pin in range(4):
-                GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
-              time.sleep(0.0015)
-          GPIO.cleanup()
-          print (str(pitch_degree_to_step) + "up")
-        else:
-          GPIO.setmode(GPIO.BOARD)
-          control_pins = [7,11,13,15]
-          for pin in control_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, 0) 
-          halfstep_seq = [
-          [1,0,0,1],
-          [0,0,0,1],
-          [0,0,1,1],
-          [0,0,1,0],
-          [0,1,1,0],
-          [0,1,0,0],
-          [1,1,0,0],
-          [1,0,0,0]
-          ]
-          for i in range(int(pitch_degree_to_step)):
-            for halfstep in range(8):
-              for pin in range(4):
-                GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
-              time.sleep(0.0015)
-          GPIO.cleanup()
-          print (str(pitch_degree_to_step) + "down")
 
+        #Print val moves in GUI
+        self.txtfld3.insert(END, str(str(pitch_direction) +str(pitch_degrees + str(yaw_direction) )+ str(yaw_degrees)))
+
+        #Vals for motor to move
+        pitch_degree_to_step = float(pitch_degrees) * STEP_PER_DEGREE
         yaw_degree_to_step = float(yaw_degrees) * STEP_PER_DEGREE
-        if yaw_direction == "Left":
-          GPIO.setmode(GPIO.BOARD)
-          control_pins = [31,33,35,37]
-          for pin in control_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, 0) 
-          halfstep_seq = [
-          [1,0,0,0],
-          [1,1,0,0],
-          [0,1,0,0],
-          [0,1,1,0],
-          [0,0,1,0],
-          [0,0,1,1],
-          [0,0,0,1],
-          [1,0,0,1]
-          ]
-          for i in range(int(yaw_degree_to_step)):
-            for halfstep in range(8):
-              for pin in range(4):
-                GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
-              time.sleep(0.0015)
-          GPIO.cleanup()
-          print (str(yaw_degree_to_step) + "Left")
+
+
+        #Move up
+        if pitch_direction == "Up":
+          control_pins = [7,11,13,15]
+          mf.move_up_or_left(control_pins,pitch_degree_to_step)
+          print (str(pitch_degree_to_step) + "up")
+        #Move down
         else:
-          GPIO.setmode(GPIO.BOARD)
+          control_pins = [7,11,13,15]
+          mf.move_down_or_right(control_pins,pitch_degree_to_step)
+          print (str(pitch_degree_to_step) + "down")
+        #Move left
+        if yaw_direction == "Left":
           control_pins = [31,33,35,37]
-          for pin in control_pins:
-            GPIO.setup(pin, GPIO.OUT)
-            GPIO.output(pin, 0) 
-          halfstep_seq = [
-          [1,0,0,1],
-          [0,0,0,1],
-          [0,0,1,1],
-          [0,0,1,0],
-          [0,1,1,0],
-          [0,1,0,0],
-          [1,1,0,0],
-          [1,0,0,0]
-          ]
-          for i in range(int(yaw_degree_to_step)):
-            for halfstep in range(8):
-              for pin in range(4):
-                GPIO.output(control_pins[pin], halfstep_seq[halfstep][pin])
-              time.sleep(0.0015)
-          GPIO.cleanup()
-        print (str(yaw_degree_to_step) + "Right")
+          mf.move_up_or_left(control_pins,pitch_degree_to_step)
+          print (str(yaw_degree_to_step) + "Left")
+        #Move right
+        else:
+          control_pins = [31,33,35,37]
+          mf.move_down_or_right(control_pins,pitch_degree_to_step)
+          print (str(yaw_degree_to_step) + "Right")
                 
 
 
   
   
-
+#Display GUI
 window = Tk()
 mywin=MyWindow(window)
 window.title('Star Locator Program')

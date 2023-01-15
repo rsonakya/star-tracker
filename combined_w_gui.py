@@ -79,9 +79,6 @@ class MyWindow:
           print (str(yaw_degree_to_step) + "Right")
                 
 
-
-  
-  
 #Display GUI
 window = Tk()
 mywin=MyWindow(window)

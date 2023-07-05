@@ -1,4 +1,4 @@
-#Rohan Sonakya 07/05/2023 3:20
+#Rohan Sonakya 07/05/2023 4:37
 
 
 
@@ -96,7 +96,12 @@ class MyWindow:
                 mf.move_right(control_pins,yaw_degree_to_step)
                 print (str(yaw_degree_to_step) + "Right")
 
-
+    def reset(self):
+        with open("C:\\Users\\sonak\\Documents\\SVLC\\Star Tracker\\Code\\code-w-memory-transport-from-previous\positions.csv", 'w', encoding='UTF8') as f:
+            f.truncate()
+            f.write("(0,0)\n")
+            f.close
+        
 
   #GUI
     def __init__(self, win):
@@ -117,11 +122,16 @@ class MyWindow:
         self.newposentry=Entry(window, text="Degrees?", bd=8)
         self.newposentry.place(x=55, y=110)
 
+        #button to reset csv position file to zero
+        self.btn_reset=Button(window, text="Reset", fg='blue')
+        self.btn_reset=Button(win, text='reset', command=self.reset)
+        self.btn_reset.place(x=75, y=150)
 
 
-        self.btn=Button(window, text="Run", fg='blue')
-        self.btn=Button(win, text='move', command=self.move)
-        self.btn.place(x=100, y=150)
+        #button to start movement
+        self.btn_move=Button(window, text="Run", fg='blue')
+        self.btn_move=Button(win, text='move', command=self.move)
+        self.btn_move.place(x=145, y=150)
 
  
 
